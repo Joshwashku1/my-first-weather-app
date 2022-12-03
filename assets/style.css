@@ -1,0 +1,30 @@
+.search-card{
+    border: 10px solid black;
+    border-radius: 5px;
+    margin: 0 0 20px 0;
+}
+
+.search-header {
+
+    padding: 2.5%;
+
+}
+
+.search-body {
+    padding: 2.5%;
+}
+
+.btn{
+    color:azure;
+    background-color: rgb(36, 103, 248);
+    box-shadow: 2px 2px black;
+}
+
+.btn:hover {
+    box-shadow: 1px 1px black;
+}
+
+.current-weather{
+    border: 10px solid black;
+    margin: 0 0 20px 0;
+}
