@@ -5,10 +5,10 @@ var resultC = document.getElementById('current-day');
 var APIKey = "e061528d54d5657e594e68a2750d11be";
 
 
+// This function is to call an api of the current weather
+ function searchCurrent(city){
 
- function searchAPI(city){
-
-    var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q=" + city +
+    var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + city +
  "&appid=" + APIKey +"&units=imperial";
 
     fetch(queryURL)
@@ -19,12 +19,21 @@ var APIKey = "e061528d54d5657e594e68a2750d11be";
     .then(function (data) {
         console.log(data);
         displayCurrent(data);
-    //   for (var i = 0; i < data.length; i++) {
-    //     var listItem = document.createElement('li');
-    //     listItem.textContent = data[i].city.name;
-    //     console.log("This is: " + listItem);
-    //     dataE.appendChild(listItem);
-    //   }
+    });
+}
+
+// This function is to fetch the API of multiple weather data
+function searchDaily(city){
+    var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q="+city+"&units=imperial&cnt=5&appid="+APIKey;
+    fetch(queryURL)
+    .then(function(response){
+        console.log("Daily''''''''''''''")
+        console.log(response);
+        return response.json();
+    })
+    .then(function(data){
+        console.log("Daily'''''''''''''")
+        console.log(data);
     });
 }
 
@@ -34,16 +43,17 @@ function handleSearchBtn(event){
     var userInput = getInput.value;
 
     if(userInput){
-        searchAPI(userInput);
+        searchCurrent(userInput);
+        searchDaily(userInput);
     }
 
 }
 
 function displayCurrent(data){
-    var cityName = data.city.name;
-    var temp = Math.floor(data.list[0].main.temp) + "F";
-    var wind = data.list[0].wind.speed + " MPH";
-    var humidity = data.list[0].main.humidity + "%";
+    var cityName = data.name;
+    var temp = Math.floor(data.main.temp) + "F";
+    var wind = data.wind.speed + " MPH";
+    var humidity = data.main.humidity + "%";
 
     document.getElementById('current-city').textContent = cityName;
     document.getElementById('current-1').textContent = "Temp: " + temp;
@@ -55,7 +65,6 @@ function displayCurrent(data){
 
 
 
-console.log(kelvinToFar(288));
 getE.addEventListener('click', handleSearchBtn);
 
 
