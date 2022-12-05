@@ -2,11 +2,13 @@ var getE = document.getElementById('search-b');
 var getInput = document.getElementById('search-input');
 var resultC = document.getElementById('current-day');
 var forecastC = document.getElementById('forecast-container');
+var savedContainer = document.querySelector('.saved-container');
 
 var APIKey = "e061528d54d5657e594e68a2750d11be";
 
+var savedCities = [];
 
-// This function is to call an api of the current weather
+// This function is to fetch an api of the current weather
  function searchCurrent(city){
 
     var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + city +
@@ -25,7 +27,7 @@ var APIKey = "e061528d54d5657e594e68a2750d11be";
 
 // This function is to fetch the API of multiple weather data
 function searchDaily(city){
-    var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q="+city+"&units=imperial&cnt=5&appid="+APIKey;
+    var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q="+city+"&units=imperial&appid="+APIKey;
     fetch(queryURL)
     .then(function(response){ 
         console.log("Daily''''''''''''''")
@@ -46,9 +48,15 @@ function handleSearchBtn(event){
 
     var userInput = getInput.value;
 
+    savedCities.push(userInput);
+    localStorage.setItem('city', JSON.stringify(savedCities));
+
+    // search if user put in input
     if(userInput){
         searchCurrent(userInput);
         searchDaily(userInput);
+
+        forecastC.textContent = '';
     }
 
 }
@@ -72,6 +80,8 @@ function displayCurrent(data){
 function displayForecast(data){
 
     for(i=0; i <= data.list.length; i++){
+        // Loop over the three hour forecast to daily 
+        i = i + 7;
         const dayNum = i + 1;
 
         var dayForecast = document.createElement('div');
@@ -80,23 +90,72 @@ function displayForecast(data){
         dayNumber.textContent = "Day"+ dayNum;
         dayForecast.appendChild(dayNumber);
 
+        // create an element for the grabbed temp in the API call
         var temp = document.createElement('p');
-        temp.textContent = Math.floor(data.list[i].main.temp) + "F";
+        temp.textContent = "Temp: " + Math.floor(data.list[i].main.temp) + "F";
         dayForecast.appendChild(temp);
 
+        // create an element for the wind speed in the API call
         var wind = document.createElement('p');
-        wind.textContent = data.list[i].wind.speed + " MPH";
+        wind.textContent = "Wind: " + data.list[i].wind.speed + " MPH";
         dayForecast.appendChild(wind);
 
+        // create an element for the grabbed humidity in the API call
         var humidity = document.createElement('p');
-        humidity.textContent = data.list[i].main.humidity + "%";
+        humidity.textContent = "Humidity: " + data.list[i].main.humidity + "%";
         dayForecast.appendChild(humidity);
 
+        // append the div in the forecast container
         forecastC.appendChild(dayForecast);
+
+        
     };
 }
 
+// This function is being called below and will run when the page loads.
+function init() {
+    // Get stored City from localStorage
+    var storedCity = JSON.parse(localStorage.getItem("city"));
+  
+    // If City were retrieved from localStorage, update the City array to it
+    if (storedCity !== null) {
+      savedCities = storedCity;
+    }
+  
+    // This is a helper function that will render City to the DOM
+    renderCities();
+}
+
+// The following function renders items in a saved list as <button> elements
+function renderCities() {
+
+    savedContainer.innerHTML = "";
+  
+    // Render a new li for each todo
+    for (var i = 0; i < savedCities.length; i++) {
+      var savedCity = savedCities[i];
+  
+      var cityButton = document.createElement("button");
+      cityButton.textContent = savedCity; 
+      cityButton.classList = 'btn'
+  
+      
+      savedContainer.appendChild(cityButton);
+    }
+  }
+
+function handleSavedBtns(event){
+    var target = event.target;
+
+    if(target.matches('button') === true){
+        searchCurrent(target.innerHTML);
+        searchDaily(target.innerHTML);
+    }
+}
+
 getE.addEventListener('click', handleSearchBtn);
+savedContainer.addEventListener('click', handleSavedBtns)
+init();
 
 
 

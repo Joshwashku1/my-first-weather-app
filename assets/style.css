@@ -24,6 +24,11 @@
     box-shadow: 1px 1px black;
 }
 
+.saved-container {
+    border: 10px solid black;
+    margin: 0 0 20px 0;
+}
+
 .current-weather{
     border: 10px solid black;
     margin: 0 0 20px 0;
