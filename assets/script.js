@@ -2,7 +2,7 @@ var getE = document.getElementById('search-b');
 var getInput = document.getElementById('search-input');
 var resultC = document.getElementById('current-day');
 var forecastC = document.getElementById('forecast-container');
-var savedContainer = document.querySelector('.saved-container');
+var savedContainer = document.getElementById('saved-container');
 
 var APIKey = "e061528d54d5657e594e68a2750d11be";
 
@@ -56,7 +56,9 @@ function handleSearchBtn(event){
         searchCurrent(userInput);
         searchDaily(userInput);
 
-        forecastC.textContent = '';
+        forecastC.empty();
+
+        
     }
 
 }
@@ -67,7 +69,10 @@ function displayCurrent(data){
     var temp = Math.floor(data.main.temp) + "F";
     var wind = data.wind.speed + " MPH";
     var humidity = data.main.humidity + "%";
+    var iconCode = data.weather[0].icon;
+    var iconUrl = "http://openweathermap.org/img/w/" + iconCode + ".png";
 
+    document.getElementById('wicon').setAttribute('src', iconUrl);
     document.getElementById('current-city').textContent = cityName;
     document.getElementById('current-1').textContent = "Temp: " + temp;
     document.getElementById('current-2').textContent = "Wind: " + wind;
@@ -78,18 +83,25 @@ function displayCurrent(data){
 
 // Displaying the 5 day forecast
 function displayForecast(data){
-
+    document.getElementById('daily-city').textContent = data.city.name;
     for(i=0; i <= data.list.length; i++){
         // Loop over the three hour forecast to daily 
         i = i + 7;
-        const dayNum = i + 1;
+        // const dayNum = i + 1;
 
         var dayForecast = document.createElement('div');
 
         var dayNumber = document.createElement('h3');
-        dayNumber.textContent = "Day"+ dayNum;
+        dayNumber.textContent = data.list[i].dt_txt;
         dayForecast.appendChild(dayNumber);
 
+        // create an icon for the weather
+        var iconImg = document.createElement('img');
+        var iconCode = data.list[i].weather[0].icon;
+        var iconUrl = "http://openweathermap.org/img/w/" + iconCode + ".png";
+        iconImg.setAttribute('src', iconUrl);
+        dayForecast.appendChild(iconImg);
+        
         // create an element for the grabbed temp in the API call
         var temp = document.createElement('p');
         temp.textContent = "Temp: " + Math.floor(data.list[i].main.temp) + "F";
@@ -131,7 +143,7 @@ function renderCities() {
 
     savedContainer.innerHTML = "";
   
-    // Render a new li for each todo
+    // Render a new button for each saved city
     for (var i = 0; i < savedCities.length; i++) {
       var savedCity = savedCities[i];
   
@@ -150,6 +162,8 @@ function handleSavedBtns(event){
     if(target.matches('button') === true){
         searchCurrent(target.innerHTML);
         searchDaily(target.innerHTML);
+
+        forecastC.textContent = '';
     }
 }
 
